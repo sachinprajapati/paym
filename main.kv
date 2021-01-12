@@ -1,0 +1,107 @@
+WindowManager:
+    WelcomeScreen:
+    Second_Screen:
+    Reports:
+
+<WelcomeScreen>
+    name: "main"
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: dp(15)
+        pos_hint: {"center_x": .5, "center_y": 1}
+
+        MDCard:
+            size_hint: None, None
+            size: "480dp", "180dp"
+            pos_hint: {"center_x": .5, "center_y": .5}
+
+            MDLabel:
+                halign: 'center'
+                font_style: 'H3'
+                text: "DCRG Technology"
+
+        MDRoundFlatButton:
+            text: "Start Transaction"
+            pos_hint: {"center_x": .5, "center_y": .5}
+            on_release:
+                app.root.current = "second"
+                root.manager.transition.direction = "left"
+
+        MDRoundFlatButton:
+            text: "Reports"
+            pos_hint: {"center_x": .5, "center_y": .5}
+            on_release:
+                app.root.current = "reports"
+                root.manager.transition.direction = "left"
+
+<Second_Screen>:
+    name: 'second'
+
+    BoxLayout:
+        orientation: "vertical"
+
+        MDCard:
+            MDLabel:
+                halign: 'center'
+                font_style: 'H3'
+                text: "Please Select Excel File"
+
+        BoxLayout:
+            orientation: 'horizontal'
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            padding: [100, 0, 100, 0]
+
+            MDTextFieldRect:
+                id: result
+                size_hint: 1, None
+                height: "48sp"
+                hint_text: 'File Location'
+                pos_hint: {'center_x': 0.5, 'center_y': 0.8}
+
+            MDIconButton:
+                icon: "file"
+                user_font_size: "48sp"
+                on_release: app.root.current_screen.choose()
+                pos_hint: {'center_x': 0.5, 'center_y': 0.8}
+                custom_color: 0, 1, 0, 1
+
+        BoxLayout:
+            orientation: 'horizontal'
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            padding: [100, 0, 100, 0]
+
+            MDRectangleFlatButton:
+                text: "Submit"
+                size_hint: (0.8, .2)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                text_color: 0, 0, 1, 1
+                md_bg_color: 1, 1, 0, 1
+                on_release:
+                    app.root.current_screen.StartRunning()
+
+            MDRectangleFlatIconButton:
+                icon: "keyboard-backspace"
+                text: "Back"
+                size_hint: (0.8, .2)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                on_release:
+                    app.root.current = "main"
+                    root.manager.transition.direction = "right"
+
+
+<Reports>:
+    name: 'reports'
+    BoxLayout:
+        orientation: 'horizontal'
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        padding: [100, 0, 100, 0]
+
+        MDRectangleFlatIconButton:    
+            icon: "keyboard-backspace"
+            text: "Back"
+            size_hint: (0.8, .1)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            on_release:
+                app.root.current = "main"
+                root.manager.transition.direction = "right"

@@ -1,74 +1,95 @@
-from kivy.core.window import Window
+from kivymd.app import MDApp
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.button import Button
+from kivy.properties import ListProperty
 from kivy.lang import Builder
 
-from kivymd.app import MDApp
-from kivymd.uix.filemanager import MDFileManager
-from kivymd.toast import toast
+from kivymd.uix.label import MDLabel
+
+from plyer import filechooser
+
+import pandas as pd
+import os, time
+
+from bhartipay import StartProccess
+import chromedriver_autoinstaller
+from selenium import webdriver
+import pandas as pd
+from datetime import datetime
+
+url = 'https://dcrgpay.com/payment/'
+
+class WelcomeScreen(Screen):
+	pass
+
+class Reports(Screen):
+	pass
+
+class Second_Screen(Screen):
+	file = None
+	alert = None
+
+	selection = ListProperty([])
+
+	def choose(self):
+		if self.alert:
+			self.remove_widget(self.alert)
+		filechooser.open_file(on_selection=self.handle_selection, filters=[("Excel Files", "*.csv")])
+
+	def handle_selection(self, selection):
+	    self.selection = selection
+
+	def on_selection(self, *a, **k):
+		self.ids.result.text = self.selection[0]
+		self.file = self.selection[0]
+
+	def StartRunning(self):
+		if self.file and os.path.isfile(self.file):
+			df = pd.read_csv(self.file)
+			df['date'] = pd.to_datetime(df.date)
+			chromedriver_autoinstaller.install()
+			driver = webdriver.Chrome()
+			for index, row in df.iterrows():
+			    n_trans = 2
+			    retry = 2
+			    failed = 0
+			    success_status = 0
+			    while n_trans != success_status:
+			        if failed == 3:
+			            break
+			        driver.get(url)
+			        sp = StartProccess(driver, row.to_dict())
+			        if not sp.Completed():
+			            failed += 1
+			            print("failed")
+			            continue
+			        else:
+			            if sp.getStatus():
+			                success_status += 1
+			                print("success")
+			            else:
+			                retry -= 1
+			                print("not success")
+			        if retry == 0:
+			            if success_status > 0:
+			                retry = n_trans - success_status
+			            else:
+			                break
+		else:
+			print("in else")
+			if not self.alert:
+				self.alert = MDLabel(text="Please Select File",
+                    halign="center",
+                    theme_text_color='Error')
+				self.add_widget(self.alert)
 
 
-KV = '''
-BoxLayout:
-    orientation: 'vertical'
+class WindowManager(ScreenManager):
+    pass
 
-    MDToolbar:
-        title: "MDFileManager"
-        left_action_items: [['menu', lambda x: None]]
-        elevation: 10
+class MainApp(MDApp):
+	pass
 
 
-    FloatLayout:
-
-        MDRoundFlatIconButton:
-            text: "Open manager"
-            icon: "folder"
-            pos_hint: {'center_x': .5, 'center_y': .6}
-            on_release: app.file_manager_open()
-'''
-
-
-class Example(MDApp):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        Window.bind(on_keyboard=self.events)
-        self.manager_open = False
-        self.file_manager = MDFileManager(
-            exit_manager=self.exit_manager,
-            select_path=self.select_path,
-            # previous=True,
-            ext=['.csv']
-        )
-
-    def build(self):
-        return Builder.load_string(KV)
-
-    def file_manager_open(self):
-        self.file_manager.show('/')  # output manager to the screen
-        self.manager_open = True
-
-    def select_path(self, path):
-        '''It will be called when you click on the file name
-        or the catalog selection button.
-
-        :type path: str;
-        :param path: path to the selected directory or file;
-        '''
-
-        self.exit_manager()
-        toast(path)
-
-    def exit_manager(self, *args):
-        '''Called when the user reaches the root of the directory tree.'''
-
-        self.manager_open = False
-        self.file_manager.close()
-
-    def events(self, instance, keyboard, keycode, text, modifiers):
-        '''Called when buttons are pressed on the mobile device.'''
-
-        if keyboard in (1001, 27):
-            if self.manager_open:
-                self.file_manager.back()
-        return True
-
-
-Example().run()
+if __name__ == "__main__":
+    MainApp().run()

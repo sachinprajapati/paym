@@ -4,7 +4,6 @@ from selenium import webdriver
 import pandas as pd
 from datetime import datetime
 import time, os
-import re
 
 url = 'https://dcrgpay.com/payment/'
 # url = 'https://merchant.bhartipay.com/formpay/i/97099'
