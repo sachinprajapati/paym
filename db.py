@@ -42,6 +42,7 @@ class DB():
 			if isinstance(myDict['date'], datetime):
 				myDict['date'] = myDict['date'].strftime("%Y-%m")
 		try:
+			print("sql is", sql, list(myDict.values()))
 			self.curr.execute(sql, list(myDict.values()))
 			self.conn.commit()
 		except IntegrityError as e:
@@ -51,3 +52,12 @@ class DB():
 		sql = "select id from {0} where {1}".format(self.table, ' AND '.join('{} = {}'.format(key, value) for key, value in kwargs.items()))
 		self.curr.execute(sql)
 		return self.curr.fetchone()
+
+	def DateFilter(self, date):
+		print("date is", date.day, date.month, date.year)
+		sql = """select card_num, cvv, date, pin, count(case message when 'SUCCESS' then 1 else null end) as 
+		success FROM Transactions left join Cards on Cards.id=Transactions.card_id where dt BETWEEN 
+		'{0}-{1:02d}-{2:02d}' AND '{0}-{1:02d}-{3:02d}' group by Cards.id order by success;""".format(date.year, date.month, date.day, date.day+1)
+		print("sql is", sql)
+		self.curr.execute(sql)
+		return self.curr.fetchall()

@@ -29,24 +29,23 @@ class StartProccess():
 	response_dc = {}
 
 	def __init__(self, driver, dc):
-		self.amount = str(1)
+		self.amount = str(2000)
 		self.cname = f.name()
 		self.cphone = randint(9000000000, 9999999999)
 		self.cemail = f.email()
 		self.driver = driver
 		self.dc = dc
-		print(self.dc)
 
 	def FormFill(self):
 		elem = self.driver.find_element_by_id("amount")
 		elem.send_keys(self.amount)
-		elem = self.driver.find_element_by_id("cname")
+		elem = self.driver.find_element_by_id("name")
 		elem.send_keys(self.cname)
-		elem = self.driver.find_element_by_id("cphone")
+		elem = self.driver.find_element_by_id("phone")
 		elem.send_keys(self.cphone)
-		elem = self.driver.find_element_by_id("cemail")
+		elem = self.driver.find_element_by_id("email")
 		elem.send_keys(self.cemail)
-		elem = self.driver.find_element_by_id("button")
+		elem = self.driver.find_element_by_id("payID")
 		elem.click()
 		db = DB('Cards')
 		db.InsertOne(self.dc.copy())
@@ -76,12 +75,13 @@ class StartProccess():
 		elem.click()
 
 	def TransactionResponse(self):
-		device_list_table = WebDriverWait(self.driver, 1).until(EC.presence_of_element_located((By.TAG_NAME, 'tbody')))
+		device_list_table = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'tbody')))
 		result = device_list_table.find_elements_by_tag_name('tr')
 		for i in range(len(result)):
 		    device_list_elements = result[i].find_elements_by_tag_name('td')
 		    if len(device_list_elements)>1:
 		        key, value = device_list_elements[1].text.strip(), device_list_elements[3].text.strip()
+		        print(key,value)
 		        if 'ID' in key:
 		        	self.response_dc['tid'] = value
 		        elif 'STATUS' in key:
@@ -91,7 +91,6 @@ class StartProccess():
 
 		self.response_dc['amount'] = self.amount
 		self.response_dc['card_id'] = self.card_id
-		print(self.response_dc)
 		db = DB('Transactions')
 		db.InsertOne(self.response_dc)
 
@@ -99,7 +98,7 @@ class StartProccess():
 		while self.driver.current_url != forurl:
 			time.sleep(1)
 			if self.driver.current_url == response_url:
-				return self.TransactionResponse()
+				self.TransactionResponse()
 				break
 
 	def Completed(self):
@@ -113,15 +112,16 @@ class StartProccess():
 			print('in exception',e)
 			return False
 		else:
+			print("in else")
 			while self.driver.current_url != response_url:
 				time.sleep(1)
 				self.TransactionResponse()
+			print("in else last")
+			return True
 		finally:
-			if self.response_dc['status'] == 'Success':
+			if self.response_dc.get('status') == 'SUCCESS':
 				self.status = True
-				return True
-			else:
-				return False
+				print("success")
 
 
 	def getStatus(self):

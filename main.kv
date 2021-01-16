@@ -89,19 +89,24 @@ WindowManager:
                     app.root.current = "main"
                     root.manager.transition.direction = "right"
 
-
 <Reports>:
     name: 'reports'
     BoxLayout:
-        orientation: 'horizontal'
+        orientation: 'vertical'
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        padding: [100, 0, 100, 0]
+        padding: [100, 100, 100, 100]
+
+        MDRaisedButton:
+            text: "Open time picker"
+            size_hint: (.8, .01)
+            padding: [0,50,0,50]
+            on_release: app.root.current_screen.show_date_picker()
 
         MDRectangleFlatIconButton:    
             icon: "keyboard-backspace"
             text: "Back"
-            size_hint: (0.8, .1)
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: (.5, .01)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.1}
             on_release:
                 app.root.current = "main"
                 root.manager.transition.direction = "right"
