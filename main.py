@@ -1,6 +1,10 @@
 import os, sys
 
-#os.environ['KIVY_GL_BECKEND'] = 'angle_sdl2'
+os.environ['KIVY_GL_BECKEND'] = 'angle_sdl2'
+os.environ['KIVY_TEXT'] = 'sdl2'
+os.environ['KIVY_IMAGE'] = 'sdl2'
+
+from kivy.resources import resource_add_path, resource_find
 
 from kivymd.app import MDApp
 from kivymd.uix.label import MDLabel
@@ -106,4 +110,6 @@ class MainApp(MDApp):
 
 
 if __name__ == '__main__':
-    MainApp().run()
+	if hasattr(sys, '_MEIPASS'):
+		resource_add_path(os.path.join(sys._MEIPASS))
+	MainApp().run()
