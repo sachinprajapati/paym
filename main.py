@@ -1,22 +1,20 @@
-import os
+import os, sys
 
-os.environ['KIVY_GL_BECKEND'] = 'angle_sdl2'
+#os.environ['KIVY_GL_BECKEND'] = 'angle_sdl2'
 
 from kivymd.app import MDApp
+from kivymd.uix.label import MDLabel
 
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.button import Button
 from kivy.uix.anchorlayout import AnchorLayout
-from kivymd.uix.label import MDLabel
-
 from kivy.properties import ListProperty
-from kivy.clock import Clock
 from kivy.lang import Builder
 
 from plyer import filechooser
 
 import pandas as pd
-import os, time
+import time
 
 from bhartipay import StartProccess
 import chromedriver_autoinstaller
@@ -107,5 +105,5 @@ class MainApp(MDApp):
 	pass
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     MainApp().run()
